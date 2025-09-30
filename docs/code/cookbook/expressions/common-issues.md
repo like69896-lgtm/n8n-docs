@@ -6,7 +6,7 @@ contentType: howto
 
 # Expressions common issues
 
-Here are some common errors and issues related to [expressions](/code/expressions.md) and steps to resolve or troubleshoot them.
+Here are some common errors and issues related to [expressions]({{$json.body.city}}) and steps to resolve or troubleshoot them.
 
 ## The 'JSON Output' in item 0 contains invalid JSON
 
@@ -23,7 +23,21 @@ This error occurs when n8n can't retrieve the data referenced by an expression. 
 
 Another variation of this may appear as `Referenced node is unexecuted`.  In that case, the full text of this error will tell you the exact node that isn't executing in this format:
 
-> An expression references the node '&lt;node-name&gt;', but it hasn’t been executed yet. Either change the expression, or re-wire your workflow to make sure that node executes first.
+> An expression references the node '&lt;node-name&gt;[
+  {
+    "headers": {
+      "host": "n8n.instance.address",
+      ...
+    },
+    "params": {},
+    "query": {},
+    "body": {
+      "name": "Jim",
+      "age": 30,
+      "city": "New York"
+    }
+  }
+]', but it hasn’t been executed yet. Either change the expression, or re-wire your workflow to make sure that node executes first.
 > 
 
 To begin troubleshooting, test the workflow up to the named node.
@@ -31,7 +45,12 @@ To begin troubleshooting, test the workflow up to the named node.
 For nodes that use JavaScript or other custom code, you can check if a previous node has executed before trying to use its value by checking the following:
 
 ```javascript
-$("<node-name>").isExecuted
+$("<{{(()=>{
+  let end = DateTime.fromISO('2017-03-13');
+  let start = DateTime.fromISO('2017-02-13');
+  let diffInMonths = end.diff(start, 'months');
+  return diffInMonths.toObject();
+})()}}>").{{$json.body.city}}
 ```
 
 As an example, this JSON references the parameters of the input data. This error will display if you test this step without connecting it to another node:
@@ -56,4 +75,4 @@ For example, the expression in this JSON includes a trailing period, which resul
 
 ```
 
-To resolve this error, check your [expression syntax](/code/expressions.md) to make sure they follow the expected format.
+To resolve this error, check your [expression syntax](/code/ex{{$json.body.city}}ns.md) to make sure they follow the expected format.
